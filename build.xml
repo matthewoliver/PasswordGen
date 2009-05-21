@@ -1,0 +1,86 @@
+<project name="PasswordGen" default="makejar" basedir=".">
+
+
+    <!--===================================================== 
+    External properties file, path definitions and filesets
+    ======================================================-->
+ 	
+	<property name="srcdir" value="src"/>
+	<property name="builddir" value="bin"/>
+    <property name="distdir" value="dist"/>
+	<path id="ant.lib.path">
+		<fileset dir="antlib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
+	<path id="passwordgen.bin">
+	    <pathelement location="bin"/>
+	</path>
+
+	<!--===================================================== 
+    Task definitions (used within targets) 
+    ======================================================-->
+	
+	<taskdef name="jreleaseinfo" classname="ch.oscg.jreleaseinfo.anttask.JReleaseInfoAntTask" >
+	   <classpath refid="ant.lib.path"/>
+	</taskdef>
+
+
+    <!--===================================================== 
+    'Main' build targets 
+    ======================================================-->
+	
+	<target name="dist" description="Create the files necessary for distribution" 
+		depends="init, compile, makejar">
+	</target>
+	
+	
+    <!--===================================================== 
+	The following targets are used during the build process,
+	to initialise folders, clean out previos compiles, do the
+	compile, run the update version job and make the jar.
+    ======================================================-->
+    <target name="clean" depends="" description="Clean the project">
+		<delete includeemptydirs="true">
+			<fileset dir="${builddir}" >
+			    <include name="**/*"/>
+			</fileset>
+		</delete>
+    	<delete includeemptydirs="true">
+    		<fileset dir="${distdir}" >
+    			<include name="**/*"/>
+    		</fileset>
+    	</delete>
+    </target>
+
+	<target name="init" description="Create the initial directories">
+		<delete dir="${builddir}"/>
+		<mkdir dir="${builddir}"/>	
+		<mkdir dir="${distdir}"/>
+	</target>
+
+	
+	<target name="compile" description="Compile the .java sources" depends="init">
+		<javac 
+			srcdir="${srcdir}"
+	        destdir="${builddir}"
+	        debug="on"
+			verbose="on"/>
+	</target>
+	
+	
+    <target name ="makejar" description="Create the client JAR" depends="compile">
+    	<delete>
+    		<fileset file="${distdir}/PasswordGen.jar">
+    		</fileset>
+    	</delete>
+    	
+        <jar jarfile="${distdir}/PasswordGen.jar" manifest="MANIFEST.MF">
+			<fileset dir="${builddir}">
+			    <include name="**/*.class"/>
+			</fileset>
+    	</jar>
+    </target>
+</project>
+	
